@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>我的全端之路</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, yellow,blue);
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Segoe UI', '微軟正黑體', Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    h1 {
+      color: #fff;
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      text-shadow: 0 2px 10px rgba(20,80,80,0.1);
+      letter-spacing: 2px;
+    }
+
+    .pretty-button {
+      background: linear-gradient(90deg, #fff6b7 0%, #f6416c 100%);
+      color: #333;
+      border: none;
+      border-radius: 30px;
+      padding: 1rem 2.5rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(246,65,108,0.12);
+      transition: background 0.2s, transform 0.2s;
+      outline: none;
+    }
+
+    .pretty-button:hover {
+      background: linear-gradient(90deg, #fbc2eb 0%, #a6c1ee 100%);
+      transform: translateY(-2px) scale(1.04);
+    }
+  </style>
+</head>
+<body>
+  <h1 id="title">小明的全端之路</h1>
+  <img src="https://stimg.cardekho.com/images/carexteriorimages/630x420/Mercedes-Benz/AMG-G-63/9737/16?t=w-664" alt="CAR">
+  <button class="pretty-button" onclick="alert('Hello Future Coder!')">
+    展開全端之路
+  </button>
+  <div style="margin-top: 20px;">
+    <input type="text" id="commentInput" placeholder="想說點什麼嗎？">
+    <button onclick="addComment()">發佈留言</button>
+  </div>
+
+  <ul id="commentList" style="margin-top: 20px;">
+    <li>這是一條預設留言</li>
+  </ul>
+  
+<script>
+  function addComment() {
+    // 1. 抓取輸入框的文字內容
+    const input = document.getElementById('commentInput');
+    const message = input.value;
+
+    if (message === '') {
+        alert('請先輸入文字喔！');
+        return;
+    }
+
+    // 2. 抓取要顯示留言的 <ul> 清單
+    const list = document.getElementById('commentList');
+
+    // 3. 創造一個新的 <li> 標籤
+    const newComment = document.createElement('li');
+    newComment.textContent = message + ' ';
+
+    // 創造一個刪除按鈕
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = '刪除';
+    deleteBtn.style.marginLeft = '8px';
+    deleteBtn.onclick = function() {
+      list.removeChild(newComment);
+    };
+
+    // 把刪除按鈕加進<li>
+    newComment.appendChild(deleteBtn);
+
+    // 4. 把新的 <li> 塞進清單中
+    list.appendChild(newComment);
+
+    // 5. 清空輸入框
+    input.value = '';
+  }
+
+  // 處理預設留言加上刪除按鈕
+  window.onload = function() {
+    const list = document.getElementById('commentList');
+    const liArr = list.querySelectorAll('li');
+    liArr.forEach(function(li) {
+      // 檢查是否已經有刪除按鈕，避免重複新增
+      if (!li.querySelector('button')) {
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = '刪除';
+        deleteBtn.style.marginLeft = '8px';
+        deleteBtn.onclick = function() {
+          list.removeChild(li);
+        };
+        li.appendChild(deleteBtn);
+      }
+    });
+  };
+</script>
+</body>
+</html>
+
