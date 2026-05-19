@@ -54,62 +54,87 @@
     <button onclick="addComment()">發佈留言</button>
   </div>
 
-  <ul id="commentList" style="margin-top: 20px;">
-    <li>這是一條預設留言</li>
-  </ul>
-  
+  <ul id="commentList" style="margin-top: 20px;"></ul>
+
 <script>
+  // --- LocalStorage 相關功能 ---
+  function saveCommentsToLocalStorage(comments) {
+    localStorage.setItem('commentsList', JSON.stringify(comments));
+  }
+
+  function getCommentsFromLocalStorage() {
+    const comments = localStorage.getItem('commentsList');
+    return comments ? JSON.parse(comments) : [];
+  }
+
   function addComment() {
-    // 1. 抓取輸入框的文字內容
     const input = document.getElementById('commentInput');
     const message = input.value;
 
     if (message === '') {
-        alert('請先輸入文字喔！');
-        return;
+      alert('請先輸入文字喔！');
+      return;
     }
 
-    // 2. 抓取要顯示留言的 <ul> 清單
-    const list = document.getElementById('commentList');
+    // 取得目前localStorage留言，加入新留言(新增留言都插在列表最後)
+    const comments = getCommentsFromLocalStorage();
+    comments.push(message);
+    saveCommentsToLocalStorage(comments);
 
-    // 3. 創造一個新的 <li> 標籤
-    const newComment = document.createElement('li');
-    newComment.textContent = message + ' ';
+    renderComments();
 
-    // 創造一個刪除按鈕
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = '刪除';
-    deleteBtn.style.marginLeft = '8px';
-    deleteBtn.onclick = function() {
-      list.removeChild(newComment);
-    };
-
-    // 把刪除按鈕加進<li>
-    newComment.appendChild(deleteBtn);
-
-    // 4. 把新的 <li> 塞進清單中
-    list.appendChild(newComment);
-
-    // 5. 清空輸入框
     input.value = '';
   }
 
-  // 處理預設留言加上刪除按鈕
-  window.onload = function() {
+  // 渲染留言(依據localStorage資料)
+  function renderComments() {
     const list = document.getElementById('commentList');
-    const liArr = list.querySelectorAll('li');
-    liArr.forEach(function(li) {
-      // 檢查是否已經有刪除按鈕，避免重複新增
-      if (!li.querySelector('button')) {
+    list.innerHTML = ''; // 先清空舊留言
+
+    const comments = getCommentsFromLocalStorage();
+
+    // 沒有留言就給一條預設留言
+    if (comments.length === 0) {
+      const li = document.createElement('li');
+      li.textContent = '這是一條預設留言';
+      list.appendChild(li);
+
+      // 補加刪除按鈕（預設留言也能刪除，且刪除會清空 localStorage）
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = '刪除';
+      deleteBtn.style.marginLeft = '8px';
+      deleteBtn.onclick = function() {
+        localStorage.removeItem('commentsList');
+        renderComments();
+      };
+      li.appendChild(deleteBtn);
+
+    } else {
+      // 根據 localStorage 渲染所有留言
+      comments.forEach(function(comment, idx) {
+        const li = document.createElement('li');
+        li.textContent = comment + ' ';
+
         const deleteBtn = document.createElement('button');
         deleteBtn.textContent = '刪除';
         deleteBtn.style.marginLeft = '8px';
         deleteBtn.onclick = function() {
-          list.removeChild(li);
+          // 刪除本條留言
+          const comments = getCommentsFromLocalStorage();
+          comments.splice(idx, 1);
+          saveCommentsToLocalStorage(comments);
+          renderComments();
         };
         li.appendChild(deleteBtn);
-      }
-    });
+
+        list.appendChild(li);
+      });
+    }
+  }
+
+  // 載入頁面時自動渲染 LocalStorage 的留言
+  window.onload = function() {
+    renderComments();
   };
 </script>
 </body>
